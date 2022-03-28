@@ -1,10 +1,11 @@
 ﻿//javascript.js
 //set map options
-var myLatLng = { lat: 38.3460, lng: -0.4907 };
+var myLatLng = { lat: -3.05, lng: -60 };
 var mapOptions = {
     center: myLatLng,
-    zoom: 7,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    zoom: 12,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    streetViewControl: false
 
 };
 
@@ -23,12 +24,37 @@ directionsDisplay.setMap(map);
 
 //define calcRoute function
 function calcRoute() {
+
+    // Puxa o modo de viagem escolhido no html
+    const selectMode = document.getElementById("mode").value
+
+    //Waipoints
+    /* const waypts = []
+    const waypoint = document.getElementById("step")
+
+    for (let i = 0; i < waypoint.length; i++) {
+        if (waypoint.options[i].selected) {
+            waypts.push({
+                location: waypoint[i].value,
+                stopover: true,
+            });
+        }
+    } */
+
+
     //create request
     var request = {
         origin: document.getElementById("from").value,
         destination: document.getElementById("to").value,
-        travelMode: google.maps.TravelMode.DRIVING, //WALKING, BYCYCLING, TRANSIT
-        unitSystem: google.maps.UnitSystem.IMPERIAL
+       /*  waypoints: waypoint,
+        optimizeWaypoints: true, */
+
+
+        /* waypoints: [
+            { location: document.getElementById("step").value, stopover: true},
+        ], */
+        travelMode: google.maps.TravelMode[selectMode], //WALKING, BYCYCLING, TRANSIT
+        unitSystem: google.maps.UnitSystem.METRIC
     }
 
     //pass the request to the route method
@@ -37,7 +63,15 @@ function calcRoute() {
 
             //Get distance and time
             const output = document.querySelector('#output');
-            output.innerHTML = "<div class='alert-info'>From: " + document.getElementById("from").value + ".<br />To: " + document.getElementById("to").value + ".<br /> Driving distance <i class='fas fa-road'></i> : " + result.routes[0].legs[0].distance.text + ".<br />Duration <i class='fas fa-hourglass-start'></i> : " + result.routes[0].legs[0].duration.text + ".</div>";
+            output.innerHTML = "<div class='alert-info'>De: "
+                    + document.getElementById("from").value 
+                    + ".<br />Para: " + document.getElementById("to").value 
+                    /* + ".<br />Parada: " + document.getElementById("step").value  */
+                        + ".<br /> Distância de Trajeto <i class='fas fa-road'></i> : " 
+                        + result.routes[0].legs[0].distance.text + ".<br />Duração <i class='fas fa-hourglass-start'></i> : " 
+                        + result.routes[0].legs[0].duration.text + ".</div>";
+
+            console.log({ result })
 
             //display route
             directionsDisplay.setDirections(result);
@@ -66,3 +100,6 @@ var autocomplete1 = new google.maps.places.Autocomplete(input1, options);
 
 var input2 = document.getElementById("to");
 var autocomplete2 = new google.maps.places.Autocomplete(input2, options);
+
+var input3 = document.getElementById("step");
+var autocomplete3 = new google.maps.places.Autocomplete(input3, options);

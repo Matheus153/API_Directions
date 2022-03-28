@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>How to add google map waypoints directions - devnote.in</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style type="text/css">
+        #main-panel {
+            font-family: "Roboto", "sans-serif";
+            padding-left: 10px;
+        }
+
+        #main-panel select,
+        #main-panel input {
+            font-size: 20px;
+            padding: 7px;
+            border-radius: 10px;
+            border: 1px solid #e2e2e2;
+            margin: 10px 0;
+        }
+
+        #main-panel select {
+            width: 100%;
+        }
+
+        #main-panel i {
+            font-size: 12px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            float: left;
+            width: 70%;
+            height: 100%;
+        }
+
+        #main-panel {
+            margin: 20px;
+            border-width: 2px;
+            width: 20%;
+            height: 400px;
+            float: left;
+            text-align: left;
+            padding-top: 0;
+        }
+
+        #directions-route {
+            margin-top: 20px;
+            background-color: #1aff16;
+            padding: 20px;
+        }
+    </style>
+    <script>
+        function initMap() {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 6,
+                center: { lat: 22.611055454616626, lng: 70.72304745531825 },
+            });
+            directionsRenderer.setMap(map);
+            document.getElementById("submit_btn").addEventListener("click", () => {
+                calculateDisplayRoutes(directionsService, directionsRenderer);
+            });
+        }
+
+        function calculateDisplayRoutes(directionsService, directionsRenderer) {
+            const waypts = [];
+            const wayPointId = document.getElementById("waypoints").value;
+
+            waypts.push({
+                location: wayPointId,
+                stopover: true,
+            });
+
+            directionsService.route({
+                origin: document.getElementById("start").value,
+                destination: document.getElementById("end").value,
+                waypoints: waypts,
+                optimizeWaypoints: true,
+                travelMode: google.maps.TravelMode.DRIVING,
+            },(response, status) => {
+                if (status === "OK" && response) {
+                    directionsRenderer.setDirections(response);
+                    const route = response.routes[0];
+                    const summaryPanel = document.getElementById("directions-route");
+                    summaryPanel.innerHTML = "";
+
+                    // For each route, display summary information.
+                    for (let i = 0; i < route.legs.length; i++) {
+                        const routeSegment = i + 1;
+                        summaryPanel.innerHTML +=
+                        "<b>Route Segment: " + routeSegment + "</b><br>";
+                        summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+                        summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+                        summaryPanel.innerHTML +=
+                        route.legs[i].distance.text + "<br><br>";
+                    }
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
+            }
+        );
+    }
+    </script>
+  </head>
+  <body>
+      <h1>How to add google map waypoints directions - devnote.in</h1>
+    <div id="map"></div>
+    <div id="main-panel">
+        <div>
+            <b>Start:</b>
+            <input type="text" id="start"><br />
+
+            <b>Waypoints:</b> <br />
+            <input type="text" id="waypoints"><br />
+
+            <b>End:</b>
+            <input type="text" id="end"><br />
+
+            <input type="submit" id="submit_btn" />
+        </div>
+        <div id="directions-route"></div>
+    </div>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkdmRfdYi8bwDGcWTV1HWdTZ62f89k4GQ&callback=initMap&libraries=places,geometry"></script>
+  </body>
+</html>
