@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="images/GIF_API.gif" width="600"/>
+	<img src="images/GIF_API.gif" width="500"/>
     <h1>API DIRECTIONS</h1>
 </div>
 
